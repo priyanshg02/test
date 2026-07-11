@@ -7,19 +7,19 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=ai-migration-backend-${CODEBUILD_BUILD_NUMBER}
+      - IMAGE_TAG=ai-migration-frontend-${CODEBUILD_BUILD_NUMBER}
 
   build:
     commands:
       - echo "Building Docker image..."
-      - docker build -t $IMAGE_REPO_NAME ./backend
+      - docker build -t $IMAGE_REPO_NAME ./frontend
       - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
       - echo "Pushing image..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - printf '[{"name":"backend","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"frontend","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
